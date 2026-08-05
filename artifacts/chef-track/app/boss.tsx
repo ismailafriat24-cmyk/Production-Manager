@@ -291,7 +291,7 @@ export default function BossDashboard() {
                 workSessions: app.todayWorkSessionsAll(),
                 productions: app.todayProductionsAll(),
                 problems: app.todayProblemsAll(),
-                bossSession: app.workSessions.find((w) => w.userId === "boss") ?? null,
+                bossSession: app.workSessions.find((w) => w.userId === "boss" && w.checkOutAt !== null) ?? app.workSessions.find((w) => w.userId === "boss") ?? null,
                 calls: app.calls,
               });
             } catch (err) {

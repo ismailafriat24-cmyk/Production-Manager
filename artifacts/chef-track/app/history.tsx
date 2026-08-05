@@ -62,20 +62,24 @@ export default function HistoryScreen() {
   const dateSummaries = useCallback((): DateSummary[] => {
     if (!historyData) return [];
 
+    const workSessions = historyData.workSessions ?? [];
+    const allProductions = historyData.productions ?? [];
+    const allProblems = historyData.problems ?? [];
+
     const dateKeySet = new Set<string>();
-    for (const s of historyData.workSessions) {
+    for (const s of workSessions) {
       dateKeySet.add(toDateKey(s.checkInAt));
     }
 
     const summaries: DateSummary[] = [];
     for (const key of Array.from(dateKeySet).sort().reverse()) {
-      const sessions = historyData.workSessions.filter(
+      const sessions = workSessions.filter(
         (s) => toDateKey(s.checkInAt) === key,
       );
-      const productions = historyData.productions.filter(
+      const productions = allProductions.filter(
         (p) => toDateKey(p.createdAt) === key,
       );
-      const problems = historyData.problems.filter(
+      const problems = allProblems.filter(
         (p) => toDateKey(p.createdAt) === key,
       );
       const calls = (historyData.calls ?? []).filter(
