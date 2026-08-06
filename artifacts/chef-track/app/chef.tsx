@@ -424,7 +424,13 @@ export default function ChefDashboard() {
                                 {
                                   text: "Delete",
                                   style: "destructive",
-                                  onPress: () => app.deleteProduction(p.id),
+                                  onPress: async () => {
+                                    try {
+                                      await app.deleteProduction(p.id);
+                                    } catch (err) {
+                                      Alert.alert("Error", err instanceof Error ? err.message : "Could not delete. Please try again.");
+                                    }
+                                  },
                                 },
                               ],
                             );
@@ -543,7 +549,13 @@ export default function ChefDashboard() {
                               {
                                 text: "Delete",
                                 style: "destructive",
-                                onPress: () => app.deleteProblem(p.id),
+                                onPress: async () => {
+                                  try {
+                                    await app.deleteProblem(p.id);
+                                  } catch (err) {
+                                    Alert.alert("Error", err instanceof Error ? err.message : "Could not delete. Please try again.");
+                                  }
+                                },
                               },
                             ]);
                           }}

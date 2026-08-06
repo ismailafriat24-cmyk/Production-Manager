@@ -279,7 +279,14 @@ export default function OperatorsScreen() {
                     </View>
                     <View style={{ gap: 6 }}>
                       <Pressable
-                        onPress={() => callChef(chef.id, chef.name)}
+                        onPress={async () => {
+                          try {
+                            await callChef(chef.id, chef.name);
+                            Alert.alert("Call sent ✓", `${chef.name} has been notified to come to the office.`);
+                          } catch (err) {
+                            Alert.alert("Error", err instanceof Error ? err.message : "Could not send call. Please try again.");
+                          }
+                        }}
                         style={[styles.actionBtn, { backgroundColor: colors.primary }]}
                       >
                         <Feather name="phone-call" size={14} color="white" />
@@ -294,7 +301,13 @@ export default function OperatorsScreen() {
                               {
                                 text: "Remove",
                                 style: "destructive",
-                                onPress: () => removeChef(chef.id),
+                                onPress: async () => {
+                                  try {
+                                    await removeChef(chef.id);
+                                  } catch (err) {
+                                    Alert.alert("Error", err instanceof Error ? err.message : "Could not remove operator. Please try again.");
+                                  }
+                                },
                               },
                             ],
                           );
