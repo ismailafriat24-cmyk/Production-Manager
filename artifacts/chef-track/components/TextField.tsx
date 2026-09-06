@@ -46,7 +46,6 @@ export function TextField({
       <TextInput
         placeholderTextColor={colors.mutedForeground}
         textAlign={align}
-        writingDirection={isRtl ? "rtl" : "ltr"}
         style={[
           styles.input,
           {
@@ -55,6 +54,7 @@ export function TextField({
             color: colors.foreground,
             borderRadius: colors.radius,
             textAlign: align,
+            writingDirection: isRtl ? "rtl" : "ltr",
           },
           style,
         ]}

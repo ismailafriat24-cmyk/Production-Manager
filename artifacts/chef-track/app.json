@@ -14,6 +14,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
+      "bundleIdentifier": "com.stitchtrack.app",
+      "buildNumber": "1",
       "supportsTablet": false
     },
     "android": {
@@ -25,6 +27,8 @@
       }
     },
     "web": {
+      "bundler": "metro",
+      "output": "static",
       "favicon": "./assets/images/icon.png"
     },
     "plugins": [

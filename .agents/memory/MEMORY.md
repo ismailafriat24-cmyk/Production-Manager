@@ -1,2 +1,3 @@
 - [Clerk Google Auth](clerk-google-auth.md) — Clerk Google SSO added for managers; chefs keep email/password; workspaces scoped by join_code.
 - [DB schema approach](db-schema.md) — Raw pg pool, no Drizzle ORM; tables created via migrate() in api-server/src/index.ts startup.
+- [Standalone Expo builds](standalone-expo-builds.md) — Native releases require an explicit stable HTTPS API domain at build time; never fall back to a temporary Replit hostname.

@@ -30,6 +30,7 @@ A production management app for factory/workshop floors. Managers (bosses) monit
 - `artifacts/api-server/src/routes/` — Express route handlers
 - `artifacts/api-server/src/lib/db.ts` — pg Pool + makeId()
 - `lib/api-spec/openapi.yaml` — OpenAPI spec (health only; main API is route-based)
+- `artifacts/chef-track/BUILD.md` — standalone Android, iOS, and web build instructions
 
 ## Database tables (raw SQL)
 
@@ -50,5 +51,6 @@ _Populate as you build — explicit user instructions worth remembering across s
 ## Gotchas
 
 - The `.env` in chef-track was removed — `EXPO_PUBLIC_DOMAIN` is injected by the workflow
+- Native and separately hosted web builds must set `EXPO_PUBLIC_DOMAIN` to a stable HTTPS API hostname at build time
 - DB schema is created via raw SQL in `artifacts/api-server/src/index.ts` migrate() + startup queries
 - The `attached_assets/artifacts-extracted/` directory contains the original source zip — safe to delete once confirmed working

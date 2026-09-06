@@ -65,6 +65,7 @@ interface AppContextValue {
   loginChef: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   leaveWorkspace: () => Promise<void>;
+  acceptNetworkChange: () => Promise<void>;
 
   addChef: (name: string, email: string, password?: string) => Promise<ChefData>;
   removeChef: (id: string) => Promise<void>;
@@ -344,6 +345,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setSyncData(emptySyncData);
   }, []);
 
+  const acceptNetworkChange = useCallback(async () => {
+    await leaveWorkspace();
+  }, [leaveWorkspace]);
+
   const addChef = useCallback(async (name: string, email: string, password?: string) => {
     const chef = await api.chefs.add(name, email, password);
     await doSync();
@@ -483,7 +488,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       loaded, isOnline, joinCode, boss, subscriptionSeen, session,
       chefs: syncData.chefs, workSessions: syncData.workSessions, productions: syncData.productions,
       problems: syncData.problems, objectives: syncData.objectives, reminders: syncData.reminders, calls: syncData.calls,
-      setupBoss, setupBossGoogle, loginWithGoogle, joinWorkspace, markSubscriptionSeen, loginBoss, loginChef, logout, leaveWorkspace,
+      setupBoss, setupBossGoogle, loginWithGoogle, joinWorkspace, markSubscriptionSeen, loginBoss, loginChef, logout, leaveWorkspace, acceptNetworkChange,
       addChef, removeChef, setChefTarget, addObjective, removeObjective,
       checkIn, checkOut, currentWorkSession,
       submitProduction, updateProduction, deleteProduction,

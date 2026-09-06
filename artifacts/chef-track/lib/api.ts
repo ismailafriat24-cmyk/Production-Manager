@@ -1,14 +1,31 @@
 import { Platform } from "react-native";
 
+function getConfiguredOrigin(): string | null {
+  const configured = process.env.EXPO_PUBLIC_DOMAIN?.trim();
+  if (!configured) return null;
+
+  const withProtocol = /^https?:\/\//i.test(configured)
+    ? configured
+    : `https://${configured}`;
+
+  try {
+    return new URL(withProtocol).origin;
+  } catch {
+    return null;
+  }
+}
+
 const BASE = (() => {
-  // On web (browser), use the current page origin so relative routing works
+  // Prefer the explicit build-time API domain for native and separately hosted web builds.
+  const configuredOrigin = getConfiguredOrigin();
+  if (configuredOrigin) return `${configuredOrigin}/api`;
+
+  // When web is served alongside the API, same-origin routing works without configuration.
   if (Platform.OS === "web" && typeof window !== "undefined" && window.location?.origin) {
     return `${window.location.origin}/api`;
   }
-  // On native (Android/iOS), use the configured server domain
-  const domain = process.env.EXPO_PUBLIC_DOMAIN
-    ?? "08e2f69d-a162-43d6-8c47-9a90ca846bc6-00-1r4yis9sa04hg.kirk.replit.dev";
-  return `https://${domain}/api`;
+
+  return null;
 })();
 
 let _joinCode: string | null = null;
@@ -31,6 +48,12 @@ async function request<T>(
   path: string,
   body?: unknown,
 ): Promise<T> {
+  if (!BASE) {
+    throw new Error(
+      "API server URL is not configured. Set EXPO_PUBLIC_DOMAIN to the deployed API hostname before building.",
+    );
+  }
+
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (_joinCode) headers["X-Workspace-Code"] = _joinCode;
   if (_authTokenGetter) {
