@@ -18,12 +18,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { ProductionBarChart, type BarItem } from "@/components/ProductionBarChart";
 import { ShareCodeModal } from "@/components/ShareCodeModal";
 import { SectionHeader } from "@/components/SectionHeader";
 import { ShiftSummaryModal } from "@/components/ShiftSummaryModal";
 import { useApp } from "@/contexts/AppContext";
 import { useColors } from "@/hooks/useColors";
 import { fmtDateTime, fmtDuration, fmtTime } from "@/lib/format";
+import { api, type SyncData } from "@/lib/api";
 import { generateAndSharePdf } from "@/lib/pdf";
 
 function useNow(intervalMs = 1000) {
@@ -59,6 +61,57 @@ export default function BossDashboard() {
   const todayProductions = app.todayProductionsAll();
   const todayProblems = app.todayProblemsAll();
   const todayWorkSessions = app.todayWorkSessionsAll();
+
+  // ── Chart data ────────────────────────────────────────────────────────────
+  const [historySync, setHistorySync] = useState<SyncData | null>(null);
+  const [chartTab, setChartTab] = useState<"today" | "trend">("today");
+
+  useEffect(() => {
+    api.sync(false).then(setHistorySync).catch(() => {/* silent */});
+  }, []);
+
+  // Today: one bar per operator showing their total pieces
+  const todayChartData = useMemo<BarItem[]>(() => {
+    return app.chefs.map((chef) => {
+      const qty = todayProductions
+        .filter((p) => p.chefId === chef.id)
+        .reduce((sum, p) => sum + p.items.reduce((s, it) => {
+          const n = parseFloat(it.quantity);
+          return s + (isNaN(n) ? 0 : n);
+        }, 0), 0);
+      const targetStr = chef.dailyTarget ? `target ${chef.dailyTarget}` : undefined;
+      return { label: chef.name, value: qty, sub: targetStr };
+    });
+  }, [app.chefs, todayProductions]);
+
+  // 7-day trend: one bar per day, total pieces across all operators
+  const trendChartData = useMemo<BarItem[]>(() => {
+    const prods = historySync?.productions ?? [];
+    const dayMap = new Map<string, number>();
+    // Build last 7 calendar days
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      dayMap.set(key, 0);
+    }
+    for (const p of prods) {
+      const d = new Date(p.createdAt);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      if (dayMap.has(key)) {
+        const qty = p.items.reduce((s, it) => {
+          const n = parseFloat(it.quantity);
+          return s + (isNaN(n) ? 0 : n);
+        }, 0);
+        dayMap.set(key, (dayMap.get(key) ?? 0) + qty);
+      }
+    }
+    return Array.from(dayMap.entries()).map(([key, total]) => {
+      const d = new Date(key + "T12:00:00");
+      const label = d.toLocaleDateString(undefined, { weekday: "short", day: "numeric" });
+      return { label, value: total };
+    });
+  }, [historySync]);
 
   const totalQty = useMemo(() => {
     return todayProductions.reduce((acc, p) => {
@@ -108,6 +161,7 @@ export default function BossDashboard() {
       bossSession:
         app.workSessions.find((w) => w.userId === "boss" && w.checkOutAt !== null) ?? null,
       calls: app.calls,
+      dailyTrend: trendChartData,
     });
     setShowSummary(false);
   };
@@ -244,6 +298,46 @@ export default function BossDashboard() {
           </Card>
         </View>
 
+        {/* ── Production Overview Chart ── */}
+        <Card>
+          <SectionHeader
+            title="Production overview"
+            icon="bar-chart-2"
+            subtitle={chartTab === "today" ? "Today per operator" : "Last 7 days total"}
+          />
+          {/* Tab toggle */}
+          <View style={{ flexDirection: "row", gap: 8, marginTop: 12, marginBottom: 8 }}>
+            {(["today", "trend"] as const).map((tab) => (
+              <Pressable
+                key={tab}
+                onPress={() => setChartTab(tab)}
+                style={{
+                  paddingHorizontal: 12,
+                  paddingVertical: 5,
+                  borderRadius: 999,
+                  backgroundColor: chartTab === tab ? colors.primary : colors.muted,
+                }}
+              >
+                <Text style={{
+                  fontFamily: "Inter_600SemiBold",
+                  fontSize: 12,
+                  color: chartTab === tab ? "white" : colors.mutedForeground,
+                }}>
+                  {tab === "today" ? "Today" : "7-day trend"}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+          <ProductionBarChart
+            data={chartTab === "today" ? todayChartData : trendChartData}
+            emptyLabel={
+              chartTab === "today"
+                ? "No operators added yet."
+                : "No production data yet."
+            }
+          />
+        </Card>
+
         <View style={styles.actionRow}>
           <Button
             label="Objectives"
@@ -293,6 +387,7 @@ export default function BossDashboard() {
                 problems: app.todayProblemsAll(),
                 bossSession: app.workSessions.find((w) => w.userId === "boss" && w.checkOutAt !== null) ?? app.workSessions.find((w) => w.userId === "boss") ?? null,
                 calls: app.calls,
+                dailyTrend: trendChartData,
               });
             } catch (err) {
               Alert.alert("Could not export PDF", String(err));

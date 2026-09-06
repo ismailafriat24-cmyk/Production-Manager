@@ -10,6 +10,8 @@ import {
   WorkSession,
 } from "@/types";
 
+type ReportWorkSession = Omit<WorkSession, "role"> & { role: string };
+
 export interface CallRecord {
   id: string;
   chefId: string;
@@ -50,18 +52,72 @@ export interface ReportPayload {
   date: Date;
   chefs: Chef[];
   objectives: Objective[];
-  workSessions: WorkSession[];
+  workSessions: ReportWorkSession[];
   productions: Production[];
   problems: ProblemReport[];
-  bossSession: WorkSession | null;
+  bossSession: ReportWorkSession | null;
   calls?: CallRecord[];
+  dailyTrend?: Array<{ label: string; value: number }>;
+}
+
+function buildBarChartSvg(
+  data: Array<{ label: string; value: number }>,
+  color = "#7c3aed",
+): string {
+  if (data.length === 0) return "";
+
+  const width = 720;
+  const height = 220;
+  const left = 48;
+  const right = 18;
+  const top = 30;
+  const bottom = 55;
+  const plotWidth = width - left - right;
+  const plotHeight = height - top - bottom;
+  const maxValue = Math.max(...data.map((item) => item.value), 1);
+  const step = maxValue <= 20 ? 5 : maxValue <= 100 ? 10 : 50;
+  const gridMax = maxValue <= 5 ? maxValue + 1 : Math.ceil(maxValue / step) * step;
+  const slot = plotWidth / data.length;
+  const barWidth = Math.min(54, Math.max(18, slot * 0.58));
+
+  const grid = [0, 0.25, 0.5, 0.75, 1]
+    .map((fraction) => {
+      const y = top + plotHeight - fraction * plotHeight;
+      const value = Math.round(gridMax * fraction);
+      return `
+        <line x1="${left}" y1="${y}" x2="${width - right}" y2="${y}" stroke="#e2e8f0" />
+        <text x="${left - 7}" y="${y + 4}" text-anchor="end" font-size="10" fill="#94a3b8">${value}</text>`;
+    })
+    .join("");
+
+  const bars = data
+    .map((item, index) => {
+      const barHeight = item.value > 0
+        ? Math.max(3, (item.value / gridMax) * plotHeight)
+        : 0;
+      const center = left + index * slot + slot / 2;
+      const x = center - barWidth / 2;
+      const y = top + plotHeight - barHeight;
+      const label = item.label.length > 12 ? `${item.label.slice(0, 11)}…` : item.label;
+      return `
+        <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="5" fill="${color}" />
+        ${item.value > 0 ? `<text x="${center}" y="${y - 7}" text-anchor="middle" font-size="11" font-weight="700" fill="${color}">${item.value}</text>` : ""}
+        <text x="${center}" y="${height - 28}" text-anchor="middle" font-size="10" fill="#475569">${escapeHtml(label)}</text>`;
+    })
+    .join("");
+
+  return `<svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Production bar chart">
+    ${grid}
+    <line x1="${left}" y1="${top + plotHeight}" x2="${width - right}" y2="${top + plotHeight}" stroke="#cbd5e1" stroke-width="1.5" />
+    ${bars}
+  </svg>`;
 }
 
 export function buildReportHtml(payload: ReportPayload): string {
   const {
     bossName, date, chefs, objectives,
     workSessions, productions, problems,
-    bossSession, calls = [],
+    bossSession, calls = [], dailyTrend = [],
   } = payload;
 
   const dateStr = date.toLocaleDateString(undefined, {
@@ -108,6 +164,10 @@ export function buildReportHtml(payload: ReportPayload): string {
   const grandProblems = problems.length;
   const activeOperators = operatorRows.filter((r) => r.chefProds.length > 0 || r.firstIn !== null).length;
   const totalCalls = calls.length;
+  const operatorChart = buildBarChartSvg(
+    operatorRows.map((row) => ({ label: row.chef.name, value: row.totalQty })),
+  );
+  const trendChart = buildBarChartSvg(dailyTrend, "#2563eb");
 
   // ── Operator summary table rows ────────────────────────────────────────────
   const tableRows = operatorRows
@@ -241,6 +301,9 @@ export function buildReportHtml(payload: ReportPayload): string {
 
   .footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid #e2e8f0;
             font-size: 11px; color: #94a3b8; text-align: center; }
+  .chart-wrap { border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 12px 4px;
+                background: #fff; margin-bottom: 14px; }
+  .chart-svg { width: 100%; height: auto; display: block; }
 
   @media print {
     body { padding: 16px; }
@@ -300,6 +363,9 @@ export function buildReportHtml(payload: ReportPayload): string {
       </tr>
     </tbody>
   </table>
+
+  ${operatorChart ? `<h2>Production by operator</h2><div class="chart-wrap">${operatorChart}</div>` : ""}
+  ${trendChart ? `<h2>Company production — last 7 days</h2><div class="chart-wrap">${trendChart}</div>` : ""}
 
   <!-- Problems -->
   ${grandProblems > 0 ? `<h2>Problems (${grandProblems})</h2>${problemsHtml}` : ""}

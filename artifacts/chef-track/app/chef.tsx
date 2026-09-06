@@ -38,6 +38,8 @@ export default function ChefDashboard() {
   const app = useApp();
   const now = useNow(1000);
   const [checkingIn, setCheckingIn] = useState(false);
+  const [confirmDeleteProductionId, setConfirmDeleteProductionId] = useState<string | null>(null);
+  const [confirmDeleteProblemId, setConfirmDeleteProblemId] = useState<string | null>(null);
 
   const chef = app.chefs.find((c) => c.id === app.session?.userId);
   const ws = chef ? app.currentWorkSession(chef.id) : null;
@@ -414,46 +416,40 @@ export default function ChefDashboard() {
                             Edit
                           </Text>
                         </Pressable>
-                        <Pressable
-                          onPress={() => {
-                            Alert.alert(
-                              "Delete submission?",
-                              "This action cannot be undone.",
-                              [
-                                { text: "Cancel", style: "cancel" },
-                                {
-                                  text: "Delete",
-                                  style: "destructive",
-                                  onPress: async () => {
-                                    try {
-                                      await app.deleteProduction(p.id);
-                                    } catch (err) {
-                                      Alert.alert("Error", err instanceof Error ? err.message : "Could not delete. Please try again.");
-                                    }
-                                  },
-                                },
-                              ],
-                            );
-                          }}
-                          style={[
-                            styles.smallBtn,
-                            { backgroundColor: "#fee2e2" },
-                          ]}
-                        >
-                          <Feather
-                            name="trash-2"
-                            size={12}
-                            color={colors.destructive}
-                          />
-                          <Text
-                            style={[
-                              styles.smallBtnText,
-                              { color: colors.destructive },
-                            ]}
+                        {confirmDeleteProductionId === p.id ? (
+                          <View style={[styles.editRow, { gap: 4 }]}>
+                            <Pressable
+                              onPress={() => setConfirmDeleteProductionId(null)}
+                              style={[styles.smallBtn, { backgroundColor: colors.muted }]}
+                            >
+                              <Feather name="x" size={12} color={colors.mutedForeground} />
+                              <Text style={[styles.smallBtnText, { color: colors.mutedForeground }]}>Cancel</Text>
+                            </Pressable>
+                            <Pressable
+                              onPress={async () => {
+                                try {
+                                  await app.deleteProduction(p.id);
+                                  setConfirmDeleteProductionId(null);
+                                } catch (err) {
+                                  setConfirmDeleteProductionId(null);
+                                  Alert.alert("Error", err instanceof Error ? err.message : "Could not delete.");
+                                }
+                              }}
+                              style={[styles.smallBtn, { backgroundColor: colors.destructive }]}
+                            >
+                              <Feather name="trash-2" size={12} color="white" />
+                              <Text style={[styles.smallBtnText, { color: "white" }]}>Confirm</Text>
+                            </Pressable>
+                          </View>
+                        ) : (
+                          <Pressable
+                            onPress={() => setConfirmDeleteProductionId(p.id)}
+                            style={[styles.smallBtn, { backgroundColor: "#fee2e2" }]}
                           >
-                            Delete
-                          </Text>
-                        </Pressable>
+                            <Feather name="trash-2" size={12} color={colors.destructive} />
+                            <Text style={[styles.smallBtnText, { color: colors.destructive }]}>Delete</Text>
+                          </Pressable>
+                        )}
                       </View>
                     ) : null}
                   </View>
@@ -542,42 +538,40 @@ export default function ChefDashboard() {
                             Edit
                           </Text>
                         </Pressable>
-                        <Pressable
-                          onPress={() => {
-                            Alert.alert("Delete problem report?", "", [
-                              { text: "Cancel", style: "cancel" },
-                              {
-                                text: "Delete",
-                                style: "destructive",
-                                onPress: async () => {
-                                  try {
-                                    await app.deleteProblem(p.id);
-                                  } catch (err) {
-                                    Alert.alert("Error", err instanceof Error ? err.message : "Could not delete. Please try again.");
-                                  }
-                                },
-                              },
-                            ]);
-                          }}
-                          style={[
-                            styles.smallBtn,
-                            { backgroundColor: "#fee2e2" },
-                          ]}
-                        >
-                          <Feather
-                            name="trash-2"
-                            size={12}
-                            color={colors.destructive}
-                          />
-                          <Text
-                            style={[
-                              styles.smallBtnText,
-                              { color: colors.destructive },
-                            ]}
+                        {confirmDeleteProblemId === p.id ? (
+                          <View style={[styles.editRow, { gap: 4 }]}>
+                            <Pressable
+                              onPress={() => setConfirmDeleteProblemId(null)}
+                              style={[styles.smallBtn, { backgroundColor: colors.muted }]}
+                            >
+                              <Feather name="x" size={12} color={colors.mutedForeground} />
+                              <Text style={[styles.smallBtnText, { color: colors.mutedForeground }]}>Cancel</Text>
+                            </Pressable>
+                            <Pressable
+                              onPress={async () => {
+                                try {
+                                  await app.deleteProblem(p.id);
+                                  setConfirmDeleteProblemId(null);
+                                } catch (err) {
+                                  setConfirmDeleteProblemId(null);
+                                  Alert.alert("Error", err instanceof Error ? err.message : "Could not delete.");
+                                }
+                              }}
+                              style={[styles.smallBtn, { backgroundColor: colors.destructive }]}
+                            >
+                              <Feather name="trash-2" size={12} color="white" />
+                              <Text style={[styles.smallBtnText, { color: "white" }]}>Confirm</Text>
+                            </Pressable>
+                          </View>
+                        ) : (
+                          <Pressable
+                            onPress={() => setConfirmDeleteProblemId(p.id)}
+                            style={[styles.smallBtn, { backgroundColor: "#fee2e2" }]}
                           >
-                            Delete
-                          </Text>
-                        </Pressable>
+                            <Feather name="trash-2" size={12} color={colors.destructive} />
+                            <Text style={[styles.smallBtnText, { color: colors.destructive }]}>Delete</Text>
+                          </Pressable>
+                        )}
                       </View>
                     ) : null}
                   </View>

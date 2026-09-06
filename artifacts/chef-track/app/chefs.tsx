@@ -42,6 +42,10 @@ export default function OperatorsScreen() {
   const [editingTargetValue, setEditingTargetValue] = useState("");
   const [savingTargetId, setSavingTargetId] = useState<string | null>(null);
 
+  // Inline confirm-remove state (replaces Alert.alert which is blocked in iframes)
+  const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
+  const [removingId, setRemovingId] = useState<string | null>(null);
+
   const submit = async () => {
     setError(null);
     if (!name.trim()) return setError("Name is required.");
@@ -282,40 +286,50 @@ export default function OperatorsScreen() {
                         onPress={async () => {
                           try {
                             await callChef(chef.id, chef.name);
-                            Alert.alert("Call sent ✓", `${chef.name} has been notified to come to the office.`);
-                          } catch (err) {
-                            Alert.alert("Error", err instanceof Error ? err.message : "Could not send call. Please try again.");
+                          } catch {
+                            // non-fatal — chef will see toast via polling
                           }
                         }}
                         style={[styles.actionBtn, { backgroundColor: colors.primary }]}
                       >
                         <Feather name="phone-call" size={14} color="white" />
                       </Pressable>
-                      <Pressable
-                        onPress={() => {
-                          Alert.alert(
-                            "Remove operator?",
-                            `${chef.name} will lose access immediately.`,
-                            [
-                              { text: "Cancel", style: "cancel" },
-                              {
-                                text: "Remove",
-                                style: "destructive",
-                                onPress: async () => {
-                                  try {
-                                    await removeChef(chef.id);
-                                  } catch (err) {
-                                    Alert.alert("Error", err instanceof Error ? err.message : "Could not remove operator. Please try again.");
-                                  }
-                                },
-                              },
-                            ],
-                          );
-                        }}
-                        style={[styles.actionBtn, { backgroundColor: "#fee2e2" }]}
-                      >
-                        <Feather name="user-minus" size={14} color={colors.destructive} />
-                      </Pressable>
+                      {confirmRemoveId === chef.id ? (
+                        <View style={{ flexDirection: "row", gap: 4 }}>
+                          <Pressable
+                            onPress={() => setConfirmRemoveId(null)}
+                            style={[styles.actionBtn, { backgroundColor: colors.muted }]}
+                          >
+                            <Feather name="x" size={14} color={colors.mutedForeground} />
+                          </Pressable>
+                          <Pressable
+                            disabled={removingId === chef.id}
+                            onPress={async () => {
+                              setRemovingId(chef.id);
+                              try {
+                                await removeChef(chef.id);
+                                setConfirmRemoveId(null);
+                              } catch (err) {
+                                Alert.alert("Error", err instanceof Error ? err.message : "Could not remove operator.");
+                              } finally {
+                                setRemovingId(null);
+                              }
+                            }}
+                            style={[styles.actionBtn, { backgroundColor: colors.destructive }]}
+                          >
+                            {removingId === chef.id
+                              ? <Feather name="loader" size={14} color="white" />
+                              : <Feather name="check" size={14} color="white" />}
+                          </Pressable>
+                        </View>
+                      ) : (
+                        <Pressable
+                          onPress={() => setConfirmRemoveId(chef.id)}
+                          style={[styles.actionBtn, { backgroundColor: "#fee2e2" }]}
+                        >
+                          <Feather name="user-minus" size={14} color={colors.destructive} />
+                        </Pressable>
+                      )}
                     </View>
                   </View>
                 );
