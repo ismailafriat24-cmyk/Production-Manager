@@ -127,7 +127,7 @@ export default function OperatorsScreen() {
             />
             <TextField
               label="Email"
-              placeholder="operator@workshop.com"
+              placeholder="operator@company.com"
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"

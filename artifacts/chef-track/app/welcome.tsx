@@ -23,9 +23,9 @@ export default function Welcome() {
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <LinearGradient colors={["#1e293b", "#0f172a"]} style={[styles.hero, { paddingTop: insets.top + webTop + 32 }]}>
         <View style={styles.iconWrap}>
-          <Feather name="scissors" size={32} color="#7c3aed" />
+          <Feather name="bar-chart-2" size={32} color="#7c3aed" />
         </View>
-        <Text style={styles.title}>Stitch<Text style={{ color: "#7c3aed" }}>Track</Text></Text>
+        <Text style={styles.title}>Chef<Text style={{ color: "#7c3aed" }}>Track</Text></Text>
         <Text style={[styles.sub, { textAlign: isRtl ? "right" : "center" }]}>{t("tagline")}</Text>
       </LinearGradient>
 

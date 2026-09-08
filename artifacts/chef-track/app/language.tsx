@@ -41,10 +41,10 @@ export default function LanguageScreen() {
         style={[styles.hero, { paddingTop: insets.top + webTop + 40 }]}
       >
         <View style={styles.iconWrap}>
-          <Feather name="scissors" size={28} color="#7c3aed" />
+          <Feather name="clipboard" size={28} color="#7c3aed" />
         </View>
         <Text style={styles.heroTitle}>
-          Stitch<Text style={{ color: "#7c3aed" }}>Track</Text>
+          Chef<Text style={{ color: "#7c3aed" }}>Track</Text>
         </Text>
       </LinearGradient>
 

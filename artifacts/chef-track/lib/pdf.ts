@@ -315,7 +315,7 @@ export function buildReportHtml(payload: ReportPayload): string {
   <!-- Header -->
   <div class="header">
     <div>
-      <div class="brand">Stitch<span>Track</span></div>
+      <div class="brand">Chef<span>Track</span></div>
       <div style="font-size:12px;color:#64748b;margin-top:3px;">Daily Production Report</div>
     </div>
     <div class="meta">
@@ -370,7 +370,7 @@ export function buildReportHtml(payload: ReportPayload): string {
   <!-- Problems -->
   ${grandProblems > 0 ? `<h2>Problems (${grandProblems})</h2>${problemsHtml}` : ""}
 
-  <div class="footer">Generated ${new Date().toLocaleString()} · StitchTrack</div>
+  <div class="footer">Generated ${new Date().toLocaleString()} · ChefTrack</div>
 </body></html>`;
 }
 

@@ -119,7 +119,7 @@ export default function ResetScreen() {
           <Card style={{ marginTop: 24, gap: 14 }}>
             <TextField
               label="Boss email"
-              placeholder="boss@workshop.com"
+              placeholder="manager@company.com"
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"

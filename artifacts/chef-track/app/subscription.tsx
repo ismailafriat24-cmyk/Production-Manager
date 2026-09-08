@@ -66,7 +66,7 @@ export default function Subscription() {
             <Text style={styles.badgeText}>FREE PREVIEW</Text>
           </View>
           <Text style={[styles.title, { color: colors.foreground }]}>
-            Run your workshop{"\n"}with confidence.
+            Run your organization{"\n"}with confidence.
           </Text>
           <Text style={[styles.sub, { color: colors.mutedForeground }]}>
             Everything you need to track production, problems and people — all in one

@@ -98,7 +98,7 @@ export default function JoinScreen() {
           <View style={[styles.iconWrap, { backgroundColor: "rgba(124,58,237,0.1)" }]}>
             <Feather name="users" size={28} color="#7c3aed" />
           </View>
-          <Text style={[styles.title, { color: colors.foreground }]}>Join your workshop</Text>
+          <Text style={[styles.title, { color: colors.foreground }]}>Join your workspace</Text>
           <Text style={[styles.sub, { color: colors.mutedForeground }]}>
             Ask your manager for the workspace code and enter it below.
           </Text>

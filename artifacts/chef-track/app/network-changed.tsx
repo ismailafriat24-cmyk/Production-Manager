@@ -43,7 +43,7 @@ export default function NetworkChangedScreen() {
           <Text style={styles.title}>New network detected</Text>
           <Text style={styles.body}>
             You're connected to a different WiFi network than last time. Each
-            workshop has its own data — this one starts fresh with a new boss
+            workspace has its own data — this one starts fresh with a new manager
             account.
           </Text>
           <View style={[styles.infoBox, { backgroundColor: "rgba(249,115,22,0.1)", borderColor: "rgba(249,115,22,0.3)" }]}>

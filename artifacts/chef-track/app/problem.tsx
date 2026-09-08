@@ -141,7 +141,7 @@ export default function ProblemScreen() {
           {type === "Other" ? (
             <TextField
               label="Describe the problem type"
-              placeholder="e.g. Sewing thread broke"
+              placeholder="e.g. Equipment stopped working"
               value={customType}
               onChangeText={setCustomType}
               containerStyle={{ marginTop: 12 }}

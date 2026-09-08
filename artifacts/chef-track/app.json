@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "StitchTrack",
+    "name": "ChefTrack",
     "slug": "chef-track",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -46,7 +46,7 @@
           "icon": "./assets/images/icon.png",
           "color": "#7c3aed",
           "androidMode": "default",
-          "androidCollapsedTitle": "StitchTrack"
+          "androidCollapsedTitle": "ChefTrack"
         }
       ]
     ],

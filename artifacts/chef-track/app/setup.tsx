@@ -65,7 +65,7 @@ export default function Setup() {
         style={[styles.hero, { paddingTop: insets.top + webTop + 24 }]}
       >
         <View style={styles.heroIcon}>
-          <Feather name="scissors" size={28} color="#7c3aed" />
+          <Feather name="clipboard" size={28} color="#7c3aed" />
         </View>
         <Text style={[styles.heroTitle, { textAlign: isRtl ? "right" : "left" }]}>
           {t("setUpWorkspace")}

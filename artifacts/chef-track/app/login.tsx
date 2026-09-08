@@ -124,10 +124,10 @@ export default function Login() {
       >
         <View style={[styles.brandRow, isRtl && { flexDirection: "row-reverse" }]}>
           <View style={[styles.brandIcon, { backgroundColor: colors.secondary }]}>
-            <Feather name="scissors" size={20} color={colors.primary} />
+            <Feather name="clipboard" size={20} color={colors.primary} />
           </View>
           <Text style={[styles.brand, { color: colors.foreground }]}>
-            Stitch<Text style={{ color: colors.primary }}>Track</Text>
+            Chef<Text style={{ color: colors.primary }}>Track</Text>
           </Text>
         </View>
 
@@ -161,7 +161,7 @@ export default function Login() {
                 ]}
               >
                 <Feather
-                  name={m === "boss" ? "briefcase" : "scissors"}
+                  name={m === "boss" ? "briefcase" : "user"}
                   size={14}
                   color={active ? colors.primary : colors.mutedForeground}
                 />

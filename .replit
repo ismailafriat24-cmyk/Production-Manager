@@ -1,4 +1,4 @@
-modules = ["nodejs-24"]
+modules = ["nodejs-24", "postgresql-16"]
 
 [deployment]
 router = "application"
@@ -19,7 +19,10 @@ expertMode = true
 path = "scripts/post-merge.sh"
 timeoutMs = 20000
 
+[nix]
+channel = "stable-25_05"
+
 [userenv]
 
-[userenv.shared]
-EXPO_PUBLIC_DOMAIN = "production-manager--ismailafriat24.replit.app"
+[userenv.production]
+EXPO_PUBLIC_DOMAIN = "https://production-manager--ismailafriat24.replit.app"

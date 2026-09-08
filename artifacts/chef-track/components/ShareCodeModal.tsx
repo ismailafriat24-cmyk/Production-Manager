@@ -164,7 +164,7 @@ export function ShareCodeModal({ visible, joinCode, onClose }: Props) {
 
           <View style={[styles.steps, { backgroundColor: colors.muted, borderRadius: 14, padding: 14 }]}>
             {[
-              "Open StitchTrack on their phone or device",
+              "Open ChefTrack on their phone or device",
               'Tap "Join a workspace" on the welcome screen',
               "Scan this QR — it's one-time use and auto-refreshes after each join",
               "Or type the 6-character code above manually",

@@ -1,4 +1,4 @@
-# StitchTrack build guide
+# ChefTrack build guide
 
 The app has one Expo codebase for Android, iOS, and web. Native builds need a
 reachable API server URL at build time because Android and iOS cannot use the
@@ -19,6 +19,23 @@ deployment that serves the API.
 
 The Clerk publishable key must also be available to the build environment as
 `CLERK_PUBLISHABLE_KEY`. Never commit either value to this repository.
+
+## Release smoke test
+
+After publishing the API, run the release smoke test against its stable URL.
+Use a dedicated test workspace account rather than a personal production
+account:
+
+```bash
+EXPO_PUBLIC_DOMAIN=https://your-api.replit.app \
+SMOKE_JOIN_CODE=ABC123 \
+SMOKE_EMAIL=release-test@example.com \
+SMOKE_PASSWORD='the-test-account-password' \
+  pnpm --filter @workspace/api-server run smoke:release
+```
+
+The test rejects `localhost` and `.replit.dev` hosts, then verifies the
+published health endpoint, manager sign-in, and one `sync` request.
 
 ## Replit preview and static deployment
 
