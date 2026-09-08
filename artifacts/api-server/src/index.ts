@@ -92,7 +92,7 @@ async function migrate() {
       join_code   TEXT    NOT NULL,
       message     TEXT    NOT NULL DEFAULT '',
       created_at  BIGINT  NOT NULL,
-      seen_by     JSONB   NOT NULL DEFAULT '[]'
+      seen_by     TEXT[]  NOT NULL DEFAULT '{}'
     )
   `);
 
@@ -164,7 +164,7 @@ async function migrate() {
   await pool.query(`ALTER TABLE objectives    ADD COLUMN IF NOT EXISTS workspace_id        TEXT    NOT NULL DEFAULT ''`);
 
   await pool.query(`ALTER TABLE reminders     ADD COLUMN IF NOT EXISTS workspace_id        TEXT    NOT NULL DEFAULT ''`);
-  await pool.query(`ALTER TABLE reminders     ADD COLUMN IF NOT EXISTS seen_by             JSONB   NOT NULL DEFAULT '[]'`);
+  await pool.query(`ALTER TABLE reminders     ADD COLUMN IF NOT EXISTS seen_by             TEXT[]  NOT NULL DEFAULT '{}'`);
 
   await pool.query(`ALTER TABLE push_tokens   ADD COLUMN IF NOT EXISTS workspace_id        TEXT    NOT NULL DEFAULT ''`);
 
