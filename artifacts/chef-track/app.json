@@ -7,7 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "chef-track",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/icon.png",
       "resizeMode": "contain",
@@ -39,7 +38,6 @@
         }
       ],
       "expo-font",
-      "expo-web-browser",
       [
         "expo-notifications",
         {
@@ -53,6 +51,14 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {
+        "origin": "https://replit.com/"
+      },
+      "eas": {
+        "projectId": "39f490ec-0294-475d-b866-17e9d1f46f61"
+      }
     }
   }
 }
